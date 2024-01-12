@@ -23,9 +23,11 @@ void Git_Initialize(int argc, char **argv){
     return;
   }
 
-  createSubDirectory(dir, _OBJECTS_DIR);
+  createSubDirectory(dir, _COMMITS_DIR);
+  createSubDirectory(dir, _BRANCHES_DIR);
+  createSubDirectory(dir, _CONFIGS_DIR);
 
-  printf("%s directory created :) enjoy using %s\n", dir, _APP_NAME_DISPLAY);
+  printf("%s directory created :) enjoy using %s\n",dir, _APP_NAME_DISPLAY);
 
 
   return;
