@@ -6,6 +6,10 @@
 #define _COMMITS_DIR "/commits"
 #define _BRANCHES_DIR "/branches"
 #define _CONFIGS_DIR "/configs"
-#define _GLOBAL_CONFIGS_DIR "~/.configs/giga-git"
+#define _GLOBAL_CONFIGS_DIR "/home/mahdi-rajabi/.config/giga-git"
+
+
+
+#define MAX_DIR_LEN 300
 
 

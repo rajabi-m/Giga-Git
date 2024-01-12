@@ -1,6 +1,5 @@
-#define MAX_DIR_LEN 100
 
-struct stat st = {0}; // https://stackoverflow.com/questions/7430248/creating-a-new-directory-in-c 
+
 
 
 void createSubDirectory(char *dir, char *name){
@@ -14,7 +13,7 @@ void createSubDirectory(char *dir, char *name){
 void Git_Initialize(int argc, char **argv){
   char dir[MAX_DIR_LEN];
   sprintf(dir, "./.%s", _APP_NAME);
-  if (stat(dir, &st) == 0) {
+  if (doesDirExist(dir)) {
     printf("%s directory already exists!\n", _APP_NAME_DISPLAY);
     return;
   } // git directory already exists
