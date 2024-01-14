@@ -3,6 +3,7 @@
 #include "includes/config.h"
 #include "includes/useful-functions.c"
 #include "includes/random-stuff.c"
+#include "main/core-functions.c"
 #include "main/init.c"
 #include "main/config.c"
 
@@ -11,9 +12,9 @@
 
 int main(int argc, char **argv)
 {
-
   loadUserData();
 
+  printf("--userdata: name = %s email = %s\n", global_user.name, global_user.email);
   if(argc == 1){
     printHelp();
     return 1;

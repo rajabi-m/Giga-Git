@@ -12,9 +12,11 @@ void createSubDirectory(char *dir, char *name){
 
 void Git_Initialize(int argc, char **argv){
   char dir[MAX_DIR_LEN];
-  sprintf(dir, "./.%s", _APP_NAME);
-  if (doesDirExist(dir)) {
+  sprintf(dir, "%s", _APP_DIR);
+  char *git_dir = getGitDir();
+  if (git_dir != NULL) {
     printf("%s directory already exists!\n", _APP_NAME_DISPLAY);
+    free(git_dir);
     return;
   } // git directory already exists
   if (mkdir(dir, 0700) == -1){

@@ -7,30 +7,32 @@
 
 
 
-void loadUserData(){
+void loadUserData(){ // loading user name and user email.
+  
+
   char global_conf_file_dir[MAX_DIR_LEN];
   sprintf(global_conf_file_dir, "%s/user.conf", _GLOBAL_CONFIGS_DIR);
   printf("%s\n", global_conf_file_dir);
 
 
-
+  // opening global config file.
   FILE *configFile = fopen(global_conf_file_dir, "r");
   if (!configFile){
-    if (!doesDirExist(_GLOBAL_CONFIGS_DIR)){
+    if (!doesDirExist(_GLOBAL_CONFIGS_DIR)){ // creating global config file dir if it does't exist at all
       printf("no global user data dir yet, so i am gonna create one ...\n");
       int out = mkdir(_GLOBAL_CONFIGS_DIR, 0777);
       printf("dir created with error code = %d\n", out);
     }
     
-    fopen(global_conf_file_dir, "w");
+    fopen(global_conf_file_dir, "w"); // creating the global config file
     configFile = fopen(global_conf_file_dir, "r");
   }
 
 
   if (fread(&global_user, sizeof(struct userData), 1, configFile)){
-    printf("user loaded succsessfully\n");
+    printf("global user data loaded succsessfully\n");
   }else {
-    printf("no user data on file\n");
+    printf("no user data on global config file\n");
     strcpy(global_user.name, " ");
     strcpy(global_user.email, " ");
   }
@@ -39,46 +41,67 @@ void loadUserData(){
 
   // loading local user data if exists TODO
 
+  char *git_dir = getGitDir();
+
+  if (git_dir == NULL){
+    return; // user is not in a git directory
+  }
+  
+  sprintf(global_conf_file_dir, "%s/user.conf", git_dir); // i am sorry for using this :/
+  free(git_dir); // free git_dir because it is allocated in getGitDir func.
+  
+  
+  if ((configFile = fopen(global_conf_file_dir, "r"))){
+    fread(&global_user, sizeof(struct userData), 1, configFile);
+    printf("loaded local user data\n");
+  }
 }
 
 void changeUserData(char *data, char *value, bool is_global){
-  is_global = true; // for now
   
   // creating temp copy of userdata and applying changes to it to help us save new data
 
-  struct userData tmp_user = global_user;
+  // struct userData tmp_user = global_user; there was actually no need for this because program stops working after this command.
 
   if (areStringsEqual(data, "name")){
-    strcpy(tmp_user.name, value);
+    strcpy(global_user.name, value);
   }else if (areStringsEqual(data, "email")){
-    strcpy(tmp_user.email, value);
+    strcpy(global_user.email, value);
   }
 
 
 
 
   // saving new data
-  char dir[MAX_DIR_LEN - 100];
+  char dir[MAX_DIR_LEN]; // directory to save all data
   if (is_global){
     strcpy(dir, _GLOBAL_CONFIGS_DIR);
+  }else {
+    char *git_dir = getGitDir();
+    if (git_dir == NULL){
+      printf("you should be in a %s folder to be able to change user data locally.\n", _APP_NAME);
+      exit(1);
+    }
+    strcpy(dir, git_dir);
+    free(git_dir);
   }
   
-  char conf_file_dir[MAX_DIR_LEN];
+  char conf_file_dir[MAX_DIR_LEN+20];
   sprintf(conf_file_dir, "%s/user.conf", dir);
 
   FILE *configFile = fopen(conf_file_dir, "w");
-  fwrite(&tmp_user, sizeof(struct userData), 1, configFile);
+  fwrite(&global_user, sizeof(struct userData), 1, configFile);
   fclose(configFile);
 
   // reload user data
-  loadUserData();
+  // loadUserData(); // there was actually no need for this because program stops working after this.
 }
 
 
 void Git_Config(int argc, char **argv){
   bool is_global = false;
   static struct option long_options[] = {
-    {"global", 1, NULL, 'g'}
+    {"global", 0, NULL, 'g'} // adding global option
   };
   
   int opt = getopt_long(argc, argv, "g", long_options, NULL);
@@ -93,14 +116,18 @@ void Git_Config(int argc, char **argv){
 
   char name[10];
   char value[20];
-  sscanf(argv[3], "%[^.].%s", name, value);
+
+  int index = 2;
+  if (is_global){
+    index ++;
+  }
+
+  sscanf(argv[index], "%[^.].%s", name, value);
   
   char dir[MAX_DIR_LEN];
 
-  if (is_global){
-    if (areStringsEqual(name, "user")){
-      changeUserData(value, argv[4], true);
-    }
+  if (areStringsEqual(name, "user")){
+    changeUserData(value, argv[index + 1], is_global);
   }
 
 
