@@ -12,9 +12,13 @@
 
 int main(int argc, char **argv)
 {
+  global_git_dir = getGitDir();
+
   loadUserData();
 
   printf("--userdata: name = %s email = %s\n", global_user.name, global_user.email);
+
+  
   if(argc == 1){
     printHelp();
     return 1;

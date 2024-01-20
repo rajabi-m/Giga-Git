@@ -12,11 +12,11 @@ void loadUserData(){ // loading user name and user email.
 
   char global_conf_file_dir[MAX_DIR_LEN];
   sprintf(global_conf_file_dir, "%s/user.conf", _GLOBAL_CONFIGS_DIR);
-  printf("%s\n", global_conf_file_dir);
+  printf("--global config file = %s\n", global_conf_file_dir);
 
 
   // opening global config file.
-  FILE *configFile = fopen(global_conf_file_dir, "r");
+  FILE *configFile = fopen(global_conf_file_dir, "rb");
   if (!configFile){
     if (!doesDirExist(_GLOBAL_CONFIGS_DIR)){ // creating global config file dir if it does't exist at all
       printf("no global user data dir yet, so i am gonna create one ...\n");
@@ -25,7 +25,7 @@ void loadUserData(){ // loading user name and user email.
     }
     
     fopen(global_conf_file_dir, "w"); // creating the global config file
-    configFile = fopen(global_conf_file_dir, "r");
+    configFile = fopen(global_conf_file_dir, "rb");
   }
 
 
@@ -41,17 +41,12 @@ void loadUserData(){ // loading user name and user email.
 
   // loading local user data if exists TODO
 
-  char *git_dir = getGitDir();
-
-  if (git_dir == NULL){
-    return; // user is not in a git directory
-  }
   
-  sprintf(global_conf_file_dir, "%s/user.conf", git_dir); // i am sorry for using this :/
-  free(git_dir); // free git_dir because it is allocated in getGitDir func.
+  sprintf(global_conf_file_dir, "%s%s/user.conf", _CONFGIS_DIR, global_git_dir); // i am sorry for using this :/
   
   
-  if ((configFile = fopen(global_conf_file_dir, "r"))){
+  
+  if ((configFile = fopen(global_conf_file_dir, "rb"))){
     fread(&global_user, sizeof(struct userData), 1, configFile);
     printf("loaded local user data\n");
   }
@@ -89,7 +84,7 @@ void changeUserData(char *data, char *value, bool is_global){
   char conf_file_dir[MAX_DIR_LEN+20];
   sprintf(conf_file_dir, "%s/user.conf", dir);
 
-  FILE *configFile = fopen(conf_file_dir, "w");
+  FILE *configFile = fopen(conf_file_dir, "wb");
   fwrite(&global_user, sizeof(struct userData), 1, configFile);
   fclose(configFile);
 

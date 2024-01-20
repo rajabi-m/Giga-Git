@@ -1,5 +1,5 @@
 #include <string.h>
-
+#define MAX_LINE_LEN 100
 struct stat ___st = {0}; // https://stackoverflow.com/questions/7430248/creating-a-new-directory-in-c 
 
 int doesDirExist(char *dir){
@@ -24,4 +24,26 @@ void appendToString(char *src, char *str){
     src[i] = str[i - strlen(src)];
   }
   src[i] = '\0';
+}
+
+
+
+
+int copyFile(const char *source_dir, const char *destination_dir){
+  
+  FILE *source_file = fopen(source_dir, "r");
+  if (!source_file){
+    return -1; // -1 means source file does not exist.
+  }
+
+  FILE *destination_file = fopen(destination_dir, "w");
+
+  char line[MAX_LINE_LEN];
+  while (fgets(line, MAX_LINE_LEN, source_file)) {
+    if (!fputs(line, destination_file)){
+      return -2; // -2 meanes that some error happened while trying to copy file.
+    }
+  }
+
+  return 1;
 }

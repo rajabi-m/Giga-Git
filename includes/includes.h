@@ -6,3 +6,5 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <stdbool.h>
+#include <errno.h>

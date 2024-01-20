@@ -4,3 +4,5 @@ struct userData {
 };
 
 struct userData global_user;
+
+char *global_git_dir;

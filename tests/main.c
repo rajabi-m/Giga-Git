@@ -1,34 +1,32 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <getopt.h>
+#define MAX_LINE_LEN 5
 
-int main(int argc, char *argv[]) {
-    int opt;
-    static struct option long_options[] = {
-        {"help", no_argument, 0, 'h'},
-        {"version", no_argument, 0, 'v'},
-        {"file", required_argument, 0, 'f'},
-        {0, 0, 0, 0}
-    };
 
-    while ((opt = getopt_long(argc, argv, "hvf:", long_options, NULL)) != -1) {
-        switch (opt) {
-            case 'h':
-                printf("Help option\n");
-                break;
-            case 'v':
-                printf("Version option\n");
-                break;
-            case 'f':
-                printf("File option with argument '%s'\n", optarg);
-                break;
-            default:
-                fprintf(stderr, "Usage: %s [-h] [-v] [--file filename]\n", argv[0]);
-                exit(EXIT_FAILURE);
-        }
+int copyFile(const char *source_dir, const char *destination_dir){
+  
+  FILE *source_file = fopen(source_dir, "r");
+  if (!source_file){
+  return -1; // -1 means source file does not exist.
+  }
+
+  FILE *destination_file = fopen(destination_dir, "w");
+
+  char line[MAX_LINE_LEN];
+  while (fgets(line, MAX_LINE_LEN, source_file)) {
+    if (!fputs(line, destination_file)){
+      return -2; // -2 meanes that some error happened while trying to copy file.
     }
+  }
 
-    // Remaining code
-    return 0;
+  return 1;
+}
+
+
+int main(int argc, char *argv[])
+{
+  if (copyFile("../README.md", "../new.txt") != 1){
+    printf("vaaaaaaaaay");
+  }
+  return 0;
 }
 
